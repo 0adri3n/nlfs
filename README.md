@@ -5,6 +5,8 @@ NLFS (Nice Local File Sharing) is a lightweight program that lets you host a web
 </p>
 
 ![image](https://github.com/user-attachments/assets/7b69372d-a265-4a4c-90f0-28a9f9a93999)
+![image](https://github.com/user-attachments/assets/b548f5ee-ec87-4257-a9e9-d3daa006d30c)
+
 
 ---
 
