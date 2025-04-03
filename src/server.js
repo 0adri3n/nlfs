@@ -5,12 +5,14 @@ const fs = require("fs");
 const os = require("os");
 const winston = require("winston");
 const { v4: uuidv4 } = require("uuid");
+const qrcode = require('qrcode');
+
 
 const app = express();
 const UPLOAD_DIR = path.join(__dirname, "../uploads");
 const PUBLIC_DIR = path.join(__dirname, "../public");
 const LOGS_DIR = path.join(__dirname, "../logs");
-const FILES_DB = path.join(__dirname, "files.json");
+const FILES_DB = path.join(LOGS_DIR, "files.json");
 
 if (!fs.existsSync(UPLOAD_DIR)) fs.mkdirSync(UPLOAD_DIR);
 if (!fs.existsSync(LOGS_DIR)) fs.mkdirSync(LOGS_DIR);
@@ -44,8 +46,9 @@ const storage = multer.diskStorage({
         cb(null, UPLOAD_DIR);
     },
     filename: (req, file, cb) => {
-        const safeFilename = file.originalname.replace(/\s+/g, "_");
-        cb(null, safeFilename);
+        const fileUuid = uuidv4();
+        const ext = path.extname(file.originalname);
+        cb(null, `${fileUuid}${ext}`);
     },
 });
 
@@ -89,7 +92,7 @@ const saveFilesDB = () => {
 
 app.post("/upload", upload.array("files"), (req, res) => {
     const uploadedFiles = req.files.map((file) => {
-        const fileUuid = uuidv4();
+        const fileUuid = path.basename(file.filename, path.extname(file.filename));
         const fileData = {
             uuid: fileUuid,
             originalname: file.originalname,
@@ -98,6 +101,7 @@ app.post("/upload", upload.array("files"), (req, res) => {
             size: file.size,
         };
         files.push(fileData);
+        logger.info(`New file uploaded: ${file.originalname} (${file.size} bytes)`);
         return fileData;
     });
 
@@ -120,6 +124,7 @@ app.delete("/delete", async (req, res) => {
         const filePath = path.join(UPLOAD_DIR, files[fileIndex].filename);
 
         if (fs.existsSync(filePath)) {
+            logger.info(`File deleted: ${files[fileIndex].originalname}`);
             fs.unlinkSync(filePath);
             files.splice(fileIndex, 1);
             saveFilesDB();
@@ -135,6 +140,16 @@ app.delete("/delete", async (req, res) => {
 
 app.get("/files", (req, res) => {
     res.json(files);
+});
+
+app.get('/qrcode', async (req, res) => {
+    try {
+        const qrCodeDataURL = await qrcode.toDataURL(SERVER_URL);
+        res.json({ qr: qrCodeDataURL, url: SERVER_URL });
+    } catch (err) {
+        logger.error('Error generating QR code: ', err);
+        res.status(500).json({ error: 'Error generating QR code' });
+    }
 });
 
 app.listen(PORT, LOCAL_IP, () => {

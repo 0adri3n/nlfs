@@ -1,7 +1,6 @@
 const themeToggle = document.getElementById("themeToggle")
 const body = document.body
 
-
 const savedTheme = localStorage.getItem("theme")
 if (savedTheme) {
   body.className = savedTheme
@@ -19,7 +18,6 @@ themeToggle.addEventListener("click", () => {
   }
 })
 
-
 function showToast(message) {
   const toast = document.getElementById("toast")
   toast.textContent = message
@@ -30,12 +28,9 @@ function showToast(message) {
   }, 3000)
 }
 
-
 const fileInput = document.getElementById("fileInput")
 const uploadButton = document.getElementById("uploadButton")
 const dropArea = document.getElementById("dropArea")
-
-
 ;["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
   dropArea.addEventListener(eventName, preventDefaults, false)
   document.body.addEventListener(eventName, preventDefaults, false)
@@ -45,7 +40,6 @@ function preventDefaults(e) {
   e.preventDefault()
   e.stopPropagation()
 }
-
 ;["dragenter", "dragover"].forEach((eventName) => {
   dropArea.addEventListener(eventName, highlight, false)
 })
@@ -61,7 +55,6 @@ function unhighlight() {
   dropArea.classList.remove("drag-over")
 }
 
-
 dropArea.addEventListener("drop", handleDrop, false)
 
 function handleDrop(e) {
@@ -75,75 +68,151 @@ function handleDrop(e) {
   }
 }
 
-
 fileInput.addEventListener("change", () => {
   if (fileInput.files.length == 1) {
     const fileName = fileInput.files[0].name
     showToast(`File "${fileName}" selected.`)
-  }
-  else {
+  } else {
     showToast(`Files selected.`)
   }
 })
 
-uploadButton._clickHandler = uploadFile;
+// Progress bar elements
+const uploadProgressContainer = document.getElementById("uploadProgressContainer")
+const uploadFileName = document.getElementById("uploadFileName")
+const uploadPercentage = document.getElementById("uploadPercentage")
+const uploadProgressBar = document.getElementById("uploadProgressBar")
+const uploadedSize = document.getElementById("uploadedSize")
+const totalSize = document.getElementById("totalSize")
 
+// Format bytes to human-readable format
+function formatBytes(bytes, decimals = 2) {
+  if (bytes === 0) return "0 Bytes"
 
-uploadButton.addEventListener("click", uploadButton._clickHandler);
+  const k = 1024
+  const dm = decimals < 0 ? 0 : decimals
+  const sizes = ["Bytes", "KB", "MB", "GB", "TB"]
 
-async function uploadFile() {
-  if (fileInput.files.length === 0) {
-    showToast("Please select at least one file");
-    return;
-  }
+  const i = Math.floor(Math.log(bytes) / Math.log(k))
 
-  const formData = new FormData();
-
-  // Add all selected files to the FormData
-  for (let i = 0; i < fileInput.files.length; i++) {
-    formData.append("files", fileInput.files[i]); // 'files' is the field expected on the server side
-  }
-
-  try {
-    const response = await fetch("/upload", {
-      method: "POST",
-      body: formData,
-    });
-
-    if (response.ok) {
-      showToast("Files uploaded successfully");
-      fileInput.value = "";  // Reset the input
-      loadFiles(); // Refresh the list of files
-    } else {
-      showToast("Error during the upload");
-    }
-  } catch (error) {
-    showToast("Connection error");
-    console.error("Upload error:", error);
-  }
+  return Number.parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i]
 }
 
+// Upload file with progress tracking
+function uploadFile() {
+  if (fileInput.files.length === 0) {
+    showToast("Please select at least one file")
+    return
+  }
+
+  // Show progress container
+  uploadProgressContainer.style.display = "block"
+
+  // Disable upload button during upload
+  uploadButton.disabled = true
+  uploadButton.textContent = "Uploading..."
+
+  const formData = new FormData()
+  let totalBytes = 0
+
+  // Calculate total size and add files to FormData
+  for (let i = 0; i < fileInput.files.length; i++) {
+    formData.append("files", fileInput.files[i])
+    totalBytes += fileInput.files[i].size
+  }
+
+  // Set file name display
+  if (fileInput.files.length === 1) {
+    uploadFileName.textContent = `Uploading: ${fileInput.files[0].name}`
+  } else {
+    uploadFileName.textContent = `Uploading ${fileInput.files.length} files`
+  }
+
+  // Set total size
+  totalSize.textContent = formatBytes(totalBytes)
+
+  // Create and configure XMLHttpRequest
+  const xhr = new XMLHttpRequest()
+
+  // Track upload progress
+  xhr.upload.addEventListener("progress", (event) => {
+    if (event.lengthComputable) {
+      const percentComplete = Math.round((event.loaded / event.total) * 100)
+
+      // Update progress bar
+      uploadProgressBar.style.width = percentComplete + "%"
+      uploadPercentage.textContent = percentComplete + "%"
+      uploadedSize.textContent = formatBytes(event.loaded)
+    }
+  })
+
+  // Handle upload completion
+  xhr.addEventListener("load", () => {
+    if (xhr.status >= 200 && xhr.status < 300) {
+      showToast("Files uploaded successfully")
+
+      // Reset form and UI after successful upload
+      setTimeout(() => {
+        uploadProgressContainer.style.display = "none"
+        uploadProgressBar.style.width = "0%"
+        uploadPercentage.textContent = "0%"
+        uploadedSize.textContent = "0 KB"
+        uploadButton.disabled = false
+        uploadButton.textContent = "Upload"
+        fileInput.value = ""
+      }, 1000)
+
+      // Refresh file list
+      loadFiles()
+    } else {
+      showToast("Error during the upload")
+      uploadButton.disabled = false
+      uploadButton.textContent = "Upload"
+    }
+  })
+
+  // Handle upload error
+  xhr.addEventListener("error", () => {
+    showToast("Connection error")
+    console.error("Upload error")
+    uploadButton.disabled = false
+    uploadButton.textContent = "Upload"
+  })
+
+  // Open and send the request
+  xhr.open("POST", "/upload")
+  xhr.send(formData)
+}
+
+// Remove any existing event listeners and add a new one
+if (uploadButton._clickHandler) {
+  uploadButton.removeEventListener("click", uploadButton._clickHandler)
+}
+
+// Store the handler function
+uploadButton._clickHandler = uploadFile
+
+// Add a single event listener
+uploadButton.addEventListener("click", uploadButton._clickHandler)
 
 async function deleteFile(fileUuid, listItem) {
   try {
     console.log(fileUuid)
     const response = await fetch(`/delete?fileUuid=${fileUuid}`, {
       method: "DELETE",
-    });
+    })
 
     if (response.ok) {
-      showToast("Fichier supprimé avec succès");
+      showToast("Fichier supprimé avec succès")
     } else {
-      const errorData = await response.json();
-      showToast(errorData.message || "Erreur lors de la suppression du fichier");
+      const errorData = await response.json()
+      showToast(errorData.message || "Erreur lors de la suppression du fichier")
     }
   } catch (error) {
-    console.error("Erreur lors de la suppression du fichier:", error);
-    showToast("Erreur lors de la suppression du fichier");
+    console.error("Erreur lors de la suppression du fichier:", error)
+    showToast("Erreur lors de la suppression du fichier")
   }
 }
-
-
 
 const searchInput = document.getElementById("searchInput")
 const clearSearch = document.getElementById("clearSearch")
@@ -187,7 +256,6 @@ function filterFiles() {
   }
 }
 
-
 function formatFileSize(bytes) {
   if (bytes === 0) return "0 Bytes"
 
@@ -195,55 +263,58 @@ function formatFileSize(bytes) {
   const sizes = ["Bytes", "KB", "MB", "GB", "TB"]
   const i = Math.floor(Math.log(bytes) / Math.log(k))
 
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i]
+  return Number.parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i]
 }
-
 
 function formatDate(dateString) {
   const date = new Date(dateString)
   return date.toLocaleDateString()
 }
 
-
 async function loadFiles() {
   try {
-    const response = await fetch("/files");
-    const files = await response.json();
+    const response = await fetch("/files")
+    const files = await response.json()
 
-    const fileList = document.getElementById("fileList");
-    const emptyState = document.getElementById("emptyState");
-    
-    fileList.innerHTML = "";
+    const fileList = document.getElementById("fileList")
+    const emptyState = document.getElementById("emptyState")
+
+    fileList.innerHTML = ""
 
     if (files.length === 0) {
-      emptyState.style.display = "flex";
-      noResults.style.display = "none";
-      return;
+      emptyState.style.display = "flex"
+      noResults.style.display = "none"
+      return
     }
 
-    emptyState.style.display = "none";
-    noResults.style.display = "none";
+    emptyState.style.display = "none"
+    noResults.style.display = "none"
 
-    files.forEach(file => {
-      const li = document.createElement("li");
-      
-      const fileExtension = file.originalname.split(".").pop().toLowerCase();
-      let iconPath = "";
-      
+    files.forEach((file) => {
+      const li = document.createElement("li")
+
+      const fileExtension = file.originalname.split(".").pop().toLowerCase()
+      let iconPath = ""
+
       if (["jpg", "jpeg", "png", "gif", "svg"].includes(fileExtension)) {
-        iconPath = '<svg viewBox="0 0 24 24" width="24" height="24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>';
+        iconPath =
+          '<svg viewBox="0 0 24 24" width="24" height="24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>'
       } else if (["pdf", "doc", "docx", "txt"].includes(fileExtension)) {
-        iconPath = '<svg viewBox="0 0 24 24" width="24" height="24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>';
+        iconPath =
+          '<svg viewBox="0 0 24 24" width="24" height="24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>'
       } else if (["mp3", "wav", "ogg"].includes(fileExtension)) {
-        iconPath = '<svg viewBox="0 0 24 24" width="24" height="24"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>';
+        iconPath =
+          '<svg viewBox="0 0 24 24" width="24" height="24"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>'
       } else if (["mp4", "avi", "mov"].includes(fileExtension)) {
-        iconPath = '<svg viewBox="0 0 24 24" width="24" height="24"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>';
+        iconPath =
+          '<svg viewBox="0 0 24 24" width="24" height="24"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>'
       } else {
-        iconPath = '<svg viewBox="0 0 24 24" width="24" height="24"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg>';
+        iconPath =
+          '<svg viewBox="0 0 24 24" width="24" height="24"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg>'
       }
-      
-      const fileSize = formatFileSize(file.size || 0);
-      
+
+      const fileSize = formatFileSize(file.size || 0)
+
       li.innerHTML = `
         <div class="file-info">
           <span class="file-icon">${iconPath}</span>
@@ -282,39 +353,34 @@ async function loadFiles() {
             <path d="M3 6h18V5H3z"></path>
           </svg> Delete
         </button>
-      `;
-      
-      const deleteButton = li.querySelector(".delete-button");
-      deleteButton.addEventListener("click", async () => {
-        await deleteFile(file.uuid);
-      });
+      `
 
-      fileList.appendChild(li);
-    });
+      const deleteButton = li.querySelector(".delete-button")
+      deleteButton.addEventListener("click", async () => {
+        await deleteFile(file.uuid)
+      })
+
+      fileList.appendChild(li)
+    })
   } catch (error) {
-    console.error('Error loading files:', error);
+    console.error("Error loading files:", error)
   }
 }
-
-
 
 function isMobileDevice() {
   return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
 }
 
-
 if (isMobileDevice()) {
   const dropArea = document.getElementById("dropArea")
   dropArea.style.padding = "1rem"
 
-  
   fileInput.addEventListener("change", () => {
     if (fileInput.files.length > 0) {
       uploadButton.focus()
     }
   })
 }
-
 
 async function loadQRCode() {
   try {
@@ -330,11 +396,10 @@ async function loadQRCode() {
   }
 }
 
-
 setInterval(loadFiles, 5000)
-
 
 window.onload = () => {
   loadQRCode()
   loadFiles()
 }
+

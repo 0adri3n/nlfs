@@ -1,5 +1,4 @@
 :root {
- 
   --bg-primary-light: #ffffff;
   --bg-secondary-light: #f5f7fa;
   --text-primary-light: #333333;
@@ -10,7 +9,6 @@
   --card-bg-light: #ffffff;
   --shadow-light: 0 4px 6px rgba(0, 0, 0, 0.1);
 
- 
   --bg-primary-dark: #1a1a1a;
   --bg-secondary-dark: #2d2d2d;
   --text-primary-dark: #f5f5f5;
@@ -21,7 +19,6 @@
   --card-bg-dark: #2d2d2d;
   --shadow-dark: 0 4px 6px rgba(0, 0, 0, 0.3);
 
- 
   --bg-primary: var(--bg-primary-dark);
   --bg-secondary: var(--bg-secondary-dark);
   --text-primary: var(--text-primary-dark);
@@ -47,7 +44,6 @@ body {
   transition: background-color 0.3s, color 0.3s;
 }
 
-
 body.light-mode {
   --bg-primary: var(--bg-primary-light);
   --bg-secondary: var(--bg-secondary-light);
@@ -59,7 +55,6 @@ body.light-mode {
   --card-bg: var(--card-bg-light);
   --shadow: var(--shadow-light);
 }
-
 
 header {
   display: flex;
@@ -132,7 +127,6 @@ body.light-mode .moon-icon {
   display: block;
 }
 
-
 main {
   max-width: 1200px;
   margin: 0 auto;
@@ -148,7 +142,6 @@ h2 {
   margin-bottom: 1rem;
   color: var(--text-primary);
 }
-
 
 .qr-section {
   display: flex;
@@ -182,7 +175,6 @@ a {
 a:hover {
   text-decoration: underline;
 }
-
 
 .upload-section {
   text-align: center;
@@ -247,6 +239,45 @@ a:hover {
   background-color: var(--accent-hover);
 }
 
+/* Upload Progress Bar Styles */
+.upload-progress-container {
+  background-color: var(--card-bg);
+  border-radius: 8px;
+  padding: 1rem;
+  margin: 1rem 0;
+  box-shadow: var(--shadow);
+}
+
+.upload-progress-info {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.progress-bar-container {
+  width: 100%;
+  height: 8px;
+  background-color: var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+}
+
+.progress-bar {
+  height: 100%;
+  background-color: var(--accent);
+  border-radius: 4px;
+  width: 0%;
+  transition: width 0.3s ease;
+}
+
+.upload-progress-details {
+  display: flex;
+  justify-content: flex-end;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
 
 .search-container {
   position: relative;
@@ -295,7 +326,6 @@ a:hover {
   stroke: var(--accent);
 }
 
-
 .file-list-container {
   background-color: var(--card-bg);
   border-radius: 8px;
@@ -307,7 +337,6 @@ a:hover {
 .file-list {
   list-style: none;
 }
-
 
 .file-list li {
   padding: 0.75rem;
@@ -402,6 +431,36 @@ a:hover {
   stroke-linejoin: round;
 }
 
+/* Delete button */
+.delete-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 0.5rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  background-color: rgba(220, 53, 69, 0.1);
+  color: #dc3545;
+  border: none;
+  cursor: pointer;
+  font-size: 0.75rem;
+  transition: background-color 0.3s;
+}
+
+.delete-button svg {
+  fill: none;
+  stroke: #dc3545;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  width: 16px;
+  height: 16px;
+  margin-right: 0.25rem;
+}
+
+.delete-button:hover {
+  background-color: rgba(220, 53, 69, 0.2);
+}
 
 .desktop-only {
   display: block;
@@ -446,11 +505,9 @@ a:hover {
   margin-bottom: 1rem;
 }
 
-
 #noResults {
   display: none;
 }
-
 
 .toast {
   position: fixed;
@@ -472,7 +529,6 @@ a:hover {
   transform: translateY(0);
 }
 
-
 footer {
   text-align: center;
   padding: 1.5rem;
@@ -480,7 +536,6 @@ footer {
   color: var(--text-secondary);
   font-size: 0.875rem;
 }
-
 
 @media (max-width: 768px) {
   header {
@@ -520,7 +575,6 @@ footer {
   }
 }
 
-
 .main-container {
   display: flex;
   flex-direction: row;
@@ -536,12 +590,10 @@ footer {
   flex: 2;
 }
 
-
 .qr-container {
   max-width: 100%;
   width: 100%;
 }
-
 
 @media (max-width: 900px) {
   .main-container {

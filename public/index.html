@@ -59,6 +59,20 @@
                     <label for="fileInput" class="file-input-label">Select file(s)</label>
                     <input type="file" id="fileInput" class="file-input" multiple>
                 </div>
+                
+                <div id="uploadProgressContainer" class="upload-progress-container" style="display: none;">
+                    <div class="upload-progress-info">
+                        <span id="uploadFileName">Uploading...</span>
+                        <span id="uploadPercentage">0%</span>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div id="uploadProgressBar" class="progress-bar"></div>
+                    </div>
+                    <div class="upload-progress-details">
+                        <span id="uploadedSize">0 KB</span> / <span id="totalSize">0 KB</span>
+                    </div>
+                </div>
+                
                 <button id="uploadButton" class="primary-button">Upload</button>
             </section>
         </div>
@@ -100,7 +114,7 @@
 </main>
 
     <footer>
-        <p>&copy; 2024 NLFS - Simple and Fast File Sharing</p>
+        <p>&copy; 2025 NLFS - made with ❤️ by 0adri3n</p>
     </footer>
 
     <div id="toast" class="toast"></div>
@@ -108,3 +122,4 @@
     <script src="script.js"></script>
 </body>
 </html>
+

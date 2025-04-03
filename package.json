@@ -6,9 +6,9 @@
     "start": "electron ."
   },
   "keywords": [],
-  "author": "",
+  "author": "0adri3n",
   "license": "ISC",
-  "description": "",
+  "description": "NLFS (Nice Local File Sharing) is a simple program to host a Web App and share your files within a network",
   "dependencies": {
     "electron": "^35.1.2",
     "express": "^4.21.2",
