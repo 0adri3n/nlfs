@@ -32,7 +32,7 @@ const logger = winston.createLogger({
     format: combine(timestamp({ format: "YYYY-MM-DD HH:mm:ss" })),
     transports: [
         new winston.transports.Console({
-            format: combine(colorize(), logFormatConsole),
+            format: logFormatConsole,
         }),
         new winston.transports.File({
             filename: path.join(LOGS_DIR, "app.log"),
@@ -153,5 +153,6 @@ app.get('/qrcode', async (req, res) => {
 });
 
 app.listen(PORT, LOCAL_IP, () => {
+    console.log("Welcome to NLFS ! Please access the server at the following URL with your favorite browser :");
     logger.info(`Server running at ${SERVER_URL}`);
 });
