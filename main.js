@@ -40,7 +40,8 @@ app.whenReady().then(() => {
             contextIsolation: false,
             nodeIntegration: true
         },
-        autoHideMenuBar: true
+        autoHideMenuBar: true,
+        icon: path.join(__dirname, 'public', 'icon.ico')
     });
 
     mainWindow.loadFile(path.join(__dirname, "public", "logs.html"));
@@ -53,7 +54,8 @@ app.whenReady().then(() => {
             contextIsolation: true,
             nodeIntegration: false
         },
-        autoHideMenuBar: true
+        autoHideMenuBar: true,
+        icon: path.join(__dirname, 'public', 'icon.ico')
     });
 
 

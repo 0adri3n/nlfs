@@ -9,7 +9,8 @@
   "build": {
     "asar": false,
     "win": {
-      "target": "portable"
+      "target": "portable",
+      "icon": "public/icon.ico"
     }
   },
   "keywords": [],
