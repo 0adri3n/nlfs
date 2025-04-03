@@ -1,7 +1,7 @@
 # <p align="center"> 📁 NLFS </p>
 
 <p align="center">
-NLFS (Nice Local File Sharing) is a lightweight program that lets you host a web app and share files over your local network—completely offline, ensuring your files stay private.
+NLFS (Nice Local File Sharing) is a lightweight program that lets you host a web app and share files over your local network — completely offline, ensuring your files stay private.
 </p>
 
 ![image](https://github.com/user-attachments/assets/7b69372d-a265-4a4c-90f0-28a9f9a93999)
