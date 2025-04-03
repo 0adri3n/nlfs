@@ -1,20 +1,12 @@
-# <p align="center"> NLFS </p>
+# <p align="center"> 📁 NLFS </p>
 
 <p align="center">
-✨ A lightweight and offline-friendly file-sharing system. Built for speed, security, and simplicity. ✨
+NLFS (Nice Local File Sharing) is a lightweight program that lets you host a web app and share files over your local network—completely offline, ensuring your files stay private.
 </p>
 
-![image](https://github.com/user-attachments/assets/e4916e6a-df0c-4829-bc9e-1a3b21a5d2c0)
+![image](https://github.com/user-attachments/assets/7b69372d-a265-4a4c-90f0-28a9f9a93999)
 
 ---
-
-# ❓ How to use it 🧐
-
-<h2>📖 Find the documentation <a href="https://your-docs-link.com">here</a> for guidance!</h2>
-
----
-
-# 🏠 Want it on your desktop? 💻
 
 ## 🔨 Installation & Setup ⚙️
 
@@ -24,19 +16,14 @@
 
 <h2>🚀 Step 2 :</h2>
 
-▶️ Run the executable:
-
-- 🖥️ **Windows**: `NLFS.exe`
-- 🐧 **Linux**: `./NLFS`
-- 🍏 **MacOS**: `NLFS.app`
-
+▶️ Run the executable !
 ---
 
 ## 💡 Running from source 🧑‍💻
 
 1. 📌 Clone the repository:
    ```bash
-   git clone https://github.com/your-repo/NLFS.git
+   git clone https://github.com/0adri3n/nfls.git
    cd NLFS
    ```
 2. 📦 Install dependencies:
@@ -45,7 +32,7 @@
    ```
 3. 🔧 Start the server:
    ```bash
-   node server.js
+   npm start
    ```
 
 ---
@@ -67,8 +54,7 @@ This project is **open-source**! Feel free to **fork**, test, and improve it.
 📌 **Potential improvements:**
 - 🎨 Enhance UI for a better experience.
 - 🌍 Add multilingual support.
-- 🛠️ Improve error handling and logging.
-
+- 📁 Folders creation
 ---
 
 ## ❤️ Special Note 💡
